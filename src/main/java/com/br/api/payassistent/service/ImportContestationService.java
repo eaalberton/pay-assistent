@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -30,9 +29,9 @@ public class ImportContestationService {
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-//    @PostConstruct
+    @PostConstruct
     public void importContestationsFromExcelFile() throws IOException {
-        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\26-06-2023.xlsx";
+        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\10-07-2023.xlsx";
 
         contestationRepository.deleteAll();
 

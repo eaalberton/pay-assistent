@@ -3,6 +3,7 @@ package com.br.api.payassistent.service;
 import com.br.api.payassistent.model.Bank;
 import com.br.api.payassistent.model.CellsIndex;
 import com.br.api.payassistent.model.Contestation;
+import com.br.api.payassistent.model.dto.CheckContestationDTO;
 import com.br.api.payassistent.repository.BankRepository;
 import com.br.api.payassistent.repository.ContestationRepository;
 import jakarta.annotation.PostConstruct;
@@ -40,6 +41,21 @@ public class ContestationService {
     DecimalFormat decimalFormat;
     DateTimeFormatter dateFormat;
 
+    public CheckContestationDTO checkContestations(CheckContestationDTO check) {
+
+        try {
+            String result = checkContestationsByCpfAndMerchant(check.getDocument(), check.getMerchant());
+
+            check.setResult(result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            check.setResult(e.getMessage());
+        }
+
+        return check;
+    }
+
     public String checkContestationsByCpfAndMerchant(String cpf, String merchant) {
 
         StringBuilder sbContestations = new StringBuilder();
@@ -48,7 +64,7 @@ public class ContestationService {
             if (isValidFilters(cpf, merchant, sbContestations)) {
                 List<Contestation> contestations = repository.findByCpfGeneratedOrCpfPaid(cpf, cpf);
 
-                validateContestations(contestations, sbContestations, cpf, merchant);
+                validateContestations(contestations, sbContestations, cpf, merchant.toUpperCase());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,7 +108,7 @@ public class ContestationService {
                 sbContestations.append("    Banco: ");
                 sbContestations.append(getBank(contestation.getEndToEnd()));
                 if (!isCpfPayer(cpf, contestation.getCpfPaid()))
-                    sbContestations.append(" (PAGO POR OUTRO CPF)");
+                    sbContestations.append("  (PAGO POR OUTRO CPF)");
                 sbContestations.append("\n\n");
         });
     }
@@ -114,7 +130,7 @@ public class ContestationService {
                     sbContestations.append("    Banco: ");
                     sbContestations.append(getBank(contestation.getEndToEnd()));
                     if (!isCpfPayer(cpf, contestation.getCpfPaid()))
-                        sbContestations.append(" (PAGO POR OUTRO CPF)");
+                        sbContestations.append("  (PAGO POR OUTRO CPF)");
                     sbContestations.append("\n\n");
                 });
     }
