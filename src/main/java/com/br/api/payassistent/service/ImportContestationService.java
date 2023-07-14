@@ -4,13 +4,16 @@ import com.br.api.payassistent.model.CellsIndex;
 import com.br.api.payassistent.model.Contestation;
 import com.br.api.payassistent.repository.ContestationRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
 import org.dhatim.fastexcel.reader.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -21,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+@Slf4j
 @Service
 public class ImportContestationService {
 
@@ -29,9 +33,9 @@ public class ImportContestationService {
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    @PostConstruct
+//    @PostConstruct
     public void importContestationsFromExcelFile() throws IOException {
-        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\10-07-2023.xlsx";
+        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\14-07-2023.xlsx";
 
         contestationRepository.deleteAll();
 
@@ -40,6 +44,28 @@ public class ImportContestationService {
             readSheet(wb.getSheet(2).get(), 2);//aba bit capital
         }
 
+    }
+
+    public void importContestations(MultipartFile multipartFile) throws IOException {
+
+        File file = multipartToFile(multipartFile);
+
+        contestationRepository.deleteAll();
+
+        try (FileInputStream fileInputStream = new FileInputStream(file); ReadableWorkbook wb = new ReadableWorkbook(fileInputStream)) {
+            readSheet(wb.getFirstSheet(), 0);//aba contestações
+            readSheet(wb.getSheet(2).get(), 2);//aba bit capital
+        }
+
+        log.info("Novo arquivo: " + file.getAbsolutePath());
+        log.info("Recebendo o arquivo: ", multipartFile.getOriginalFilename());
+
+    }
+
+    private File multipartToFile(MultipartFile multipart) throws IllegalStateException, IOException {
+        File convFile = new File(System.getProperty("java.io.tmpdir")+"/"+multipart.getOriginalFilename());
+        multipart.transferTo(convFile);
+        return convFile;
     }
 
     private void readSheet(Sheet sheet, int sheetNumber) {
