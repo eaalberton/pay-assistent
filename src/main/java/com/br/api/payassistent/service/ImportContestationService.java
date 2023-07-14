@@ -90,7 +90,7 @@ public class ImportContestationService {
             return new CellsIndex(1,2,3,4,5,8);
 
         if (sheetNumber == 2)//aba bit capital
-            return new CellsIndex(1,null,2,3,4,6);
+            return new CellsIndex(1,2,3,4,5,7);
 
         return null;
     }
