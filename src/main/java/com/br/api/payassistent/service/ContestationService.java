@@ -1,31 +1,20 @@
 package com.br.api.payassistent.service;
 
 import com.br.api.payassistent.model.Bank;
-import com.br.api.payassistent.model.CellsIndex;
 import com.br.api.payassistent.model.Contestation;
 import com.br.api.payassistent.model.dto.CheckContestationDTO;
 import com.br.api.payassistent.repository.BankRepository;
 import com.br.api.payassistent.repository.ContestationRepository;
-import jakarta.annotation.PostConstruct;
-import org.apache.commons.lang3.StringUtils;
-import org.dhatim.fastexcel.reader.ReadableWorkbook;
-import org.dhatim.fastexcel.reader.Row;
-import org.dhatim.fastexcel.reader.Sheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
 public class ContestationService {
@@ -160,10 +149,9 @@ public class ContestationService {
     }
 
     private boolean isCpfPayer(String cpf, String cpfPayer) {
-        if (!cpfPayer.equals("000000000000")) {
-            if (cpfPayer.equals(cpf))
-                return true;
-        }
+        if (cpfPayer.equals("00000000000") || cpfPayer.equals(cpf))
+            return true;
+
         return false;
     }
 
