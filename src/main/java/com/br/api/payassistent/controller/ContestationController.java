@@ -1,7 +1,6 @@
 package com.br.api.payassistent.controller;
 
 import com.br.api.payassistent.model.dto.CheckContestationDTO;
-import com.br.api.payassistent.model.dto.ImportContestationDTO;
 import com.br.api.payassistent.service.ContestationService;
 import com.br.api.payassistent.service.ImportContestationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@CrossOrigin
+@CrossOrigin("*")
 @RequestMapping("/contestation")
 public class ContestationController {
 

@@ -35,7 +35,7 @@ public class ImportContestationService {
 
 //    @PostConstruct
     public void importContestationsFromExcelFile() throws IOException {
-        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\14-07-2023.xlsx";
+        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\15-07-2023.xlsx";
 
         contestationRepository.deleteAll();
 
@@ -73,9 +73,11 @@ public class ImportContestationService {
 
             CellsIndex cellsIndex = getInstanceCellsIndex(sheetNumber);
 
+            Integer indexE2e = getInstanceCellsIndex(sheetNumber).getIndexE2e();
+
             rows.filter(r -> r.getRowNum() > 1).forEach(r -> {
 
-                if (validateMainRecords(r, sheetNumber)) {
+                if (validateMainRecords(r, indexE2e)) {
                     contestationRepository.save(createContestation(r, cellsIndex));
                 }
 
@@ -95,16 +97,9 @@ public class ImportContestationService {
         return null;
     }
 
-    private boolean validateMainRecords(Row r, int sheetNumber) {
-        int endToEndCellNumber = 0;
+    private boolean validateMainRecords(Row r, int indexE2e) {
 
-        if (sheetNumber == 0)
-            endToEndCellNumber = 1;
-
-        if (sheetNumber == 2)
-            endToEndCellNumber = 2;
-
-        return !r.getCellText(endToEndCellNumber).isEmpty();
+        return !r.getCellText(indexE2e).isEmpty();
     }
 
     private Contestation createContestation(Row r, CellsIndex cellsIndex) {
