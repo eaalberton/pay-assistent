@@ -165,12 +165,12 @@ public class ContestationService {
         return dateFormat.format(date);
     }
 
-    private String formatMonetaryValue(BigDecimal value) {
+    private  String formatMonetaryValue(BigDecimal value) {
         if (value == null)
             return "Não Informado";
 
         if (decimalFormat == null)
-            decimalFormat = new DecimalFormat("¤ #,###,##0.00");
+            decimalFormat = new DecimalFormat("R$ #,###,##0.00");
 
         return decimalFormat.format(value);
     }
