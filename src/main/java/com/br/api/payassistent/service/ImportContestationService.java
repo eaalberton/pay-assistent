@@ -21,6 +21,7 @@ import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -50,14 +51,14 @@ public class ImportContestationService {
 
         File file = multipartToFile(multipartFile);
 
-        contestationRepository.deleteAll();
+//        contestationRepository.deleteAll();
 
         try (FileInputStream fileInputStream = new FileInputStream(file); ReadableWorkbook wb = new ReadableWorkbook(fileInputStream)) {
             readSheet(wb.getFirstSheet(), 0);//aba contestações
             readSheet(wb.getSheet(2).get(), 2);//aba bit capital
         }
 
-        log.info("Novo arquivo: " + file.getAbsolutePath());
+        log.info("Novo arquivo: ", file.getAbsolutePath());
         log.info("Recebendo o arquivo: ", multipartFile.getOriginalFilename());
 
     }
@@ -75,13 +76,17 @@ public class ImportContestationService {
 
             Integer indexE2e = getInstanceCellsIndex(sheetNumber).getIndexE2e();
 
+            List<String> listAllEndToEnd = contestationRepository.findAllEndToEnd();
+
             rows.filter(r -> r.getRowNum() > 1).forEach(r -> {
 
                 if (validateMainRecords(r, indexE2e)) {
-                    contestationRepository.save(createContestation(r, cellsIndex));
-                }
 
+                    if (!listAllEndToEnd.contains(r.getCellText(indexE2e).trim()))
+                        contestationRepository.save(createContestation(r, cellsIndex));
+                }
             });
+            log.info("List size: " + listAllEndToEnd.size());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
