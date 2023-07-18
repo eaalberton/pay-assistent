@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -35,4 +36,16 @@ public class Contestation {
 
     private String cpfPaid;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Contestation that = (Contestation) o;
+        return Objects.equals(endToEnd, that.endToEnd) && Objects.equals(date, that.date) && Objects.equals(value, that.value) && Objects.equals(merchant, that.merchant) && Objects.equals(cpfGenerated, that.cpfGenerated) && Objects.equals(cpfPaid, that.cpfPaid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(endToEnd, date, value, merchant, cpfGenerated, cpfPaid);
+    }
 }
