@@ -10,11 +10,14 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ContestationService {
@@ -65,6 +68,9 @@ public class ContestationService {
 
     private void validateContestations(List<Contestation> contestations, StringBuilder sbContestations, String cpf, String merchant) {
         if (contestations != null && !contestations.isEmpty()) {
+
+            contestations = contestations.stream().distinct().collect(Collectors.toList());
+
             createReplyMessage(contestations, sbContestations, cpf, merchant);
         } else {
             sbContestations.append("No contestation was found!");
@@ -169,8 +175,10 @@ public class ContestationService {
         if (value == null)
             return "Não Informado";
 
-        if (decimalFormat == null)
-            decimalFormat = new DecimalFormat("R$ #,###,##0.00");
+        if (decimalFormat == null) {
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols(new Locale("pt", "BR"));
+            decimalFormat = new DecimalFormat("¤ #,###,##0.00", symbols);
+        }
 
         return decimalFormat.format(value);
     }
