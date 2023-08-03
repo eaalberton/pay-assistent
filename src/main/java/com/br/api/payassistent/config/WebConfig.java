@@ -1,5 +1,6 @@
 package com.br.api.payassistent.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,15 +17,18 @@ import java.util.Arrays;
 @EnableWebMvc
 public class WebConfig {
 
-    private static final Long MAX_AGE = 3600L;
+    private static final Long MAX_AGE = 21600L;
     private static final int CORS_FILTER_ORDER = -102;
+
+    @Value("${security.frontend.link}")
+    private String frontendLink;
 
     @Bean
     public FilterRegistrationBean corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:4200");
+        config.addAllowedOrigin(frontendLink);
         config.setAllowedHeaders(Arrays.asList(
                 HttpHeaders.AUTHORIZATION,
                 HttpHeaders.CONTENT_TYPE,
