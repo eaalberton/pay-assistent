@@ -85,13 +85,13 @@ public class ContestationService {
 
     private void createSameMerchantMessage(List<Contestation> contestations, StringBuilder sbContestations, String cpf, String merchant) {
         contestations.stream()
-            .filter(contestation -> contestation.getMerchant().contains(merchant))
+            .filter(contestation -> contestation.getMerchant().replaceAll(" ", "").contains(merchant.replaceAll(" ", "")))
             .findAny().ifPresent(c -> {
                 sbContestations.append("*Este CPF consta na Blacklist por contestação:* \n\n");
         });
 
         contestations.stream()
-            .filter(contestation -> contestation.getMerchant().contains(merchant))
+            .filter(contestation -> contestation.getMerchant().replaceAll(" ", "").contains(merchant.replaceAll(" ", "")))
             .forEach(contestation -> {
                 sbContestations.append("ID: ");
                 sbContestations.append(contestation.getEndToEnd());
@@ -110,13 +110,13 @@ public class ContestationService {
 
     private void createDifferentMerchantMessage(List<Contestation> contestations, StringBuilder sbContestations, String cpf, String merchant) {
         contestations.stream()
-                .filter(contestation -> !contestation.getMerchant().contains(merchant))
+                .filter(contestation -> !contestation.getMerchant().replaceAll(" ", "").contains(merchant.replaceAll(" ", "")))
                 .findAny().ifPresent(c -> {
                     sbContestations.append("*Este CPF consta na Blacklist por contestação em outro site:* \n\n");
                 });
 
         contestations.stream()
-                .filter(contestation -> !contestation.getMerchant().contains(merchant))
+                .filter(contestation -> !contestation.getMerchant().replaceAll(" ", "").contains(merchant.replaceAll(" ", "")))
                 .forEach(contestation -> {
                     sbContestations.append("Valor: ");
                     sbContestations.append(formatMonetaryValue(contestation.getValue()));
