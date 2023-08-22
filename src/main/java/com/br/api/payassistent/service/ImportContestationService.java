@@ -36,7 +36,7 @@ public class ImportContestationService {
 
 //    @PostConstruct
     public void importContestationsFromExcelFile() throws IOException {
-        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\15-07-2023.xlsx";
+        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\20-08-2023.xlsx";
 
         contestationRepository.deleteAll();
 

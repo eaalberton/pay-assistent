@@ -36,7 +36,7 @@ public class ContestationService {
     public CheckContestationDTO checkContestations(CheckContestationDTO check) {
 
         try {
-            String result = checkContestationsByCpfAndMerchant(check.getDocument(), check.getMerchant());
+            String result = checkContestationsByCpfAndMerchant(check.getDocument(), check.getMerchant(), false);
 
             check.setResult(result);
 
@@ -48,7 +48,22 @@ public class ContestationService {
         return check;
     }
 
-    public String checkContestationsByCpfAndMerchant(String cpf, String merchant) {
+    public CheckContestationDTO checkContestationsEnglish(CheckContestationDTO check) {
+
+        try {
+            String result = checkContestationsByCpfAndMerchant(check.getDocument(), check.getMerchant(), true);
+
+            check.setResult(result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            check.setResult(e.getMessage());
+        }
+
+        return check;
+    }
+
+    public String checkContestationsByCpfAndMerchant(String cpf, String merchant, boolean isEnglish) {
 
         StringBuilder sbContestations = new StringBuilder();
 
@@ -56,7 +71,7 @@ public class ContestationService {
             if (isValidFilters(cpf, merchant, sbContestations)) {
                 List<Contestation> contestations = repository.findByCpfGeneratedOrCpfPaid(cpf, cpf);
 
-                validateContestations(contestations, sbContestations, cpf, merchant.toUpperCase());
+                validateContestations(contestations, sbContestations, cpf, merchant.toUpperCase(), isEnglish);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,21 +81,27 @@ public class ContestationService {
         return sbContestations.toString();
     }
 
-    private void validateContestations(List<Contestation> contestations, StringBuilder sbContestations, String cpf, String merchant) {
+    private void validateContestations(List<Contestation> contestations, StringBuilder sbContestations, String cpf, String merchant, boolean isEnglish) {
         if (contestations != null && !contestations.isEmpty()) {
 
             contestations = contestations.stream().distinct().collect(Collectors.toList());
 
-            createReplyMessage(contestations, sbContestations, cpf, merchant);
+            createReplyMessage(contestations, sbContestations, cpf, merchant, isEnglish);
         } else {
             sbContestations.append("No contestation was found!");
         }
     }
 
-    private void createReplyMessage(List<Contestation> contestations, StringBuilder sbContestations, String cpf, String merchant) {
-        createSameMerchantMessage(contestations,sbContestations, cpf, merchant);
-        createDifferentMerchantMessage(contestations,sbContestations, cpf, merchant);
-        createFooterMessage(sbContestations);
+    private void createReplyMessage(List<Contestation> contestations, StringBuilder sbContestations, String cpf, String merchant, boolean isEnglish) {
+        if (isEnglish) {
+            createSameMerchantMessageEnglish(contestations,sbContestations, cpf, merchant);
+            createDifferentMerchantMessageEnglish(contestations,sbContestations, cpf, merchant);
+            createFooterMessageEnglish(sbContestations);
+        } else {
+            createSameMerchantMessage(contestations,sbContestations, cpf, merchant);
+            createDifferentMerchantMessage(contestations,sbContestations, cpf, merchant);
+            createFooterMessage(sbContestations);
+        }
     }
 
     private void createSameMerchantMessage(List<Contestation> contestations, StringBuilder sbContestations, String cpf, String merchant) {
@@ -96,14 +117,39 @@ public class ContestationService {
                 sbContestations.append("ID: ");
                 sbContestations.append(contestation.getEndToEnd());
                 sbContestations.append("    Valor: ");
-                sbContestations.append(formatMonetaryValue(contestation.getValue()));
+                sbContestations.append(formatMonetaryValue(contestation.getValue(), false));
                 sbContestations.append("\n");
                 sbContestations.append("Data: ");
-                sbContestations.append(formatDateToString(contestation.getDate()));
+                sbContestations.append(formatDateToString(contestation.getDate(), false));
                 sbContestations.append("    Banco: ");
                 sbContestations.append(getBank(contestation.getEndToEnd()));
                 if (!isCpfPayer(cpf, contestation.getCpfPaid()))
                     sbContestations.append("  (PAGO POR OUTRO CPF)");
+                sbContestations.append("\n\n");
+        });
+    }
+
+    private void createSameMerchantMessageEnglish(List<Contestation> contestations, StringBuilder sbContestations, String cpf, String merchant) {
+        contestations.stream()
+            .filter(contestation -> contestation.getMerchant().replaceAll(" ", "").contains(merchant.replaceAll(" ", "")))
+            .findAny().ifPresent(c -> {
+                sbContestations.append("*This CPF is on the Blacklist due bank dispute:* \n\n");
+        });
+
+        contestations.stream()
+            .filter(contestation -> contestation.getMerchant().replaceAll(" ", "").contains(merchant.replaceAll(" ", "")))
+            .forEach(contestation -> {
+                sbContestations.append("ID: ");
+                sbContestations.append(contestation.getEndToEnd());
+                sbContestations.append("    Amount: ");
+                sbContestations.append(formatMonetaryValue(contestation.getValue(), true));
+                sbContestations.append("\n");
+                sbContestations.append("Date: ");
+                sbContestations.append(formatDateToString(contestation.getDate(), true));
+                sbContestations.append("    Bank: ");
+                sbContestations.append(getBank(contestation.getEndToEnd()));
+                if (!isCpfPayer(cpf, contestation.getCpfPaid()))
+                    sbContestations.append("  (PAID BY ANOTHER CPF)");
                 sbContestations.append("\n\n");
         });
     }
@@ -119,13 +165,35 @@ public class ContestationService {
                 .filter(contestation -> !contestation.getMerchant().replaceAll(" ", "").contains(merchant.replaceAll(" ", "")))
                 .forEach(contestation -> {
                     sbContestations.append("Valor: ");
-                    sbContestations.append(formatMonetaryValue(contestation.getValue()));
+                    sbContestations.append(formatMonetaryValue(contestation.getValue(), false));
                     sbContestations.append("    Data: ");
-                    sbContestations.append(formatDateToString(contestation.getDate()));
+                    sbContestations.append(formatDateToString(contestation.getDate(), false));
                     sbContestations.append("    Banco: ");
                     sbContestations.append(getBank(contestation.getEndToEnd()));
                     if (!isCpfPayer(cpf, contestation.getCpfPaid()))
                         sbContestations.append("  (PAGO POR OUTRO CPF)");
+                    sbContestations.append("\n\n");
+                });
+    }
+
+    private void createDifferentMerchantMessageEnglish(List<Contestation> contestations, StringBuilder sbContestations, String cpf, String merchant) {
+        contestations.stream()
+                .filter(contestation -> !contestation.getMerchant().replaceAll(" ", "").contains(merchant.replaceAll(" ", "")))
+                .findAny().ifPresent(c -> {
+                    sbContestations.append("*This CPF is on the Blacklist due bank dispute on another site:* \n\n");
+                });
+
+        contestations.stream()
+                .filter(contestation -> !contestation.getMerchant().replaceAll(" ", "").contains(merchant.replaceAll(" ", "")))
+                .forEach(contestation -> {
+                    sbContestations.append("Amount: ");
+                    sbContestations.append(formatMonetaryValue(contestation.getValue(), true));
+                    sbContestations.append("    Date: ");
+                    sbContestations.append(formatDateToString(contestation.getDate(), true));
+                    sbContestations.append("    Bank: ");
+                    sbContestations.append(getBank(contestation.getEndToEnd()));
+                    if (!isCpfPayer(cpf, contestation.getCpfPaid()))
+                        sbContestations.append("  (PAID BY ANOTHER CPF)");
                     sbContestations.append("\n\n");
                 });
     }
@@ -154,6 +222,18 @@ public class ContestationService {
         sbContestations.append("para que seja enviado para análise e assim ser possível removê-lo da blacklist.*");
     }
 
+    private void createFooterMessageEnglish(StringBuilder sbContestations) {
+        if (sbContestations.toString().contains("(PAID BY ANOTHER CPF)")) {
+            sbContestations.append("*(PAID BY ANOTHER CPF) = The holder of the paying CPF is the one who must remove the dispute.*");
+            sbContestations.append("\n\n");
+        }
+
+        sbContestations.append("*To be removed, they need to contact their bank, acknowledging the transactions and ");
+        sbContestations.append("closing the dispute, afterwards they need to send us proof of cancellation (Screenshot ");
+        sbContestations.append("of the conversation with the bank); in the proof it needs to contain the transaction IDs so that it ");
+        sbContestations.append("can be sent for analysis and thus being able to remove it from the blacklist upon aproval.*");
+    }
+
     private boolean isCpfPayer(String cpf, String cpfPayer) {
         if (cpfPayer.equals("00000000000") || cpfPayer.equals(cpf))
             return true;
@@ -161,9 +241,9 @@ public class ContestationService {
         return false;
     }
 
-    private String formatDateToString(LocalDateTime date) {
+    private String formatDateToString(LocalDateTime date, boolean isEnglish) {
         if (date == null)
-            return "Não Informado";
+            return isEnglish ? "Uninformed" : "Não Informado";
 
         if (dateFormat == null)
             dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -171,9 +251,9 @@ public class ContestationService {
         return dateFormat.format(date);
     }
 
-    private  String formatMonetaryValue(BigDecimal value) {
+    private  String formatMonetaryValue(BigDecimal value, boolean isEnglish) {
         if (value == null)
-            return "Não Informado";
+            return isEnglish ? "Uninformed" : "Não Informado";;
 
         if (decimalFormat == null) {
             DecimalFormatSymbols symbols = new DecimalFormatSymbols(new Locale("pt", "BR"));

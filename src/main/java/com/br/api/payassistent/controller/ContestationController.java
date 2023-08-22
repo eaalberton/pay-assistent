@@ -25,7 +25,7 @@ public class ContestationController {
     @ResponseBody
     public ResponseEntity<Object> checkContestationsByCpfAndMerchant(@RequestParam String cpf, @RequestParam String merchant) {
         try {
-            return new ResponseEntity<Object>(contestationService.checkContestationsByCpfAndMerchant(cpf, merchant), HttpStatus.OK);
+            return new ResponseEntity<Object>(contestationService.checkContestationsByCpfAndMerchant(cpf, merchant, true), HttpStatus.OK);
         } catch (Exception ei) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
                     .body("Erro interno.");
@@ -37,6 +37,17 @@ public class ContestationController {
     public ResponseEntity<Object> checkContestations(@RequestBody CheckContestationDTO check) {
         try {
             return new ResponseEntity<Object>(contestationService.checkContestations(check), HttpStatus.OK);
+        } catch (Exception ei) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
+                    .body("Erro interno.");
+        }
+    }
+
+    @PostMapping(value = "/check-en")
+    @ResponseBody
+    public ResponseEntity<Object> checkContestationsEnglish(@RequestBody CheckContestationDTO check) {
+        try {
+            return new ResponseEntity<Object>(contestationService.checkContestationsEnglish(check), HttpStatus.OK);
         } catch (Exception ei) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
                     .body("Erro interno.");
