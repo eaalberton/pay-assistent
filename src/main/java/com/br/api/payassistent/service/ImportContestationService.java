@@ -36,13 +36,14 @@ public class ImportContestationService {
 
 //    @PostConstruct
     public void importContestationsFromExcelFile() throws IOException {
-        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\15-07-2023.xlsx";
+        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\02-09-2023.xlsx";
 
         contestationRepository.deleteAll();
 
         try (FileInputStream file = new FileInputStream(fileLocation); ReadableWorkbook wb = new ReadableWorkbook(file)) {
             readSheet(wb.getFirstSheet(), 0);//aba contestações
             readSheet(wb.getSheet(2).get(), 2);//aba bit capital
+            readSheet(wb.getSheet(1).get(), 1);//aba banco genial
         }
 
     }
@@ -51,11 +52,10 @@ public class ImportContestationService {
 
         File file = multipartToFile(multipartFile);
 
-//        contestationRepository.deleteAll();
-
         try (FileInputStream fileInputStream = new FileInputStream(file); ReadableWorkbook wb = new ReadableWorkbook(fileInputStream)) {
             readSheet(wb.getFirstSheet(), 0);//aba contestações
             readSheet(wb.getSheet(2).get(), 2);//aba bit capital
+            readSheet(wb.getSheet(1).get(), 1);//aba banco genial
         }
 
         log.info("Novo arquivo: ", file.getAbsolutePath());
@@ -99,6 +99,9 @@ public class ImportContestationService {
         if (sheetNumber == 2)//aba bit capital
             return new CellsIndex(1,2,3,4,5,7);
 
+        if (sheetNumber == 1)//aba banco genial
+            return new CellsIndex(2,3,4,5,6,8);
+
         return null;
     }
 
@@ -119,14 +122,17 @@ public class ImportContestationService {
         if (!r.getCellText(cellsIndex.getIndexValue()).isEmpty())
             value = formatValue(r.getCellText(cellsIndex.getIndexValue()));
 
+        String cpfGenerated = removeNonNumericCharacters(r.getCellText(cellsIndex.getIndexCpfGenerated()));
+        String cpfPaid = removeNonNumericCharacters(r.getCellText(cellsIndex.getIndexCpfPaid()));
+
         Contestation contestation = new Contestation(
                 null,
                 r.getCellText(cellsIndex.getIndexE2e()).trim(),
                 date,
                 value,
                 r.getCellText(cellsIndex.getIndexMerchant()).toUpperCase().trim(),
-                StringUtils.leftPad(r.getCellText(cellsIndex.getIndexCpfGenerated()), 11, "0"),
-                StringUtils.leftPad(r.getCellText(cellsIndex.getIndexCpfPaid()), 11, "0")
+                StringUtils.leftPad(cpfGenerated, 11, "0"),
+                StringUtils.leftPad(cpfPaid, 11, "0")
         );
 
         System.out.println(contestation);
@@ -159,6 +165,13 @@ public class ImportContestationService {
             return new BigDecimal(value).setScale(2, RoundingMode.CEILING);
         else
             return null;
+    }
+
+    private String removeNonNumericCharacters(String value) {
+        if (value != null)
+            value = value.replaceAll("[^0-9]", "");
+
+        return value;
     }
 
     private static void testPrintCells(CellsIndex cellsIndex, Row r) {
