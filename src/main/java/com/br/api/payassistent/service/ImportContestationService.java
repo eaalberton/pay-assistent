@@ -34,7 +34,7 @@ public class ImportContestationService {
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    @PostConstruct
+//    @PostConstruct
     public void importContestationsFromExcelFile() throws IOException {
         String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\05-09-2023.xlsx";
 
