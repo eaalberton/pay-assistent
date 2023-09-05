@@ -52,8 +52,6 @@ public class ImportContestationService {
 
         File file = multipartToFile(multipartFile);
 
-        contestationRepository.deleteAll();
-
         try (FileInputStream fileInputStream = new FileInputStream(file); ReadableWorkbook wb = new ReadableWorkbook(fileInputStream)) {
             readSheet(wb.getFirstSheet(), 0);//aba contestações
             readSheet(wb.getSheet(2).get(), 2);//aba bit capital
