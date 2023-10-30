@@ -20,7 +20,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -36,7 +38,7 @@ public class ImportContestationService {
 
 //    @PostConstruct
     public void importContestationsFromExcelFile() throws IOException {
-        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\05-09-2023.xlsx";
+        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\29-10-2023.xlsx";
 
         contestationRepository.deleteAll();
 
@@ -100,7 +102,7 @@ public class ImportContestationService {
             return new CellsIndex(1,2,3,4,5,7);
 
         if (sheetNumber == 1)//aba banco genial
-            return new CellsIndex(2,3,4,5,6,8);
+            return new CellsIndex(1,2,3,4,5,7);
 
         return null;
     }
@@ -129,6 +131,7 @@ public class ImportContestationService {
                 null,
                 r.getCellText(cellsIndex.getIndexE2e()).trim(),
                 date,
+                LocalDate.now(ZoneId.of("GMT-3")),
                 value,
                 r.getCellText(cellsIndex.getIndexMerchant()).toUpperCase().trim(),
                 StringUtils.leftPad(cpfGenerated, 11, "0"),
