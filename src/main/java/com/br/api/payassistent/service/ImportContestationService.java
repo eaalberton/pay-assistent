@@ -6,6 +6,7 @@ import com.br.api.payassistent.repository.ContestationRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.dhatim.fastexcel.reader.ExcelReaderException;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
 import org.dhatim.fastexcel.reader.Sheet;
@@ -38,7 +39,7 @@ public class ImportContestationService {
 
 //    @PostConstruct
     public void importContestationsFromExcelFile() throws IOException {
-        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\29-10-2023.xlsx";
+        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\31-10-2023.xlsx";
 
         contestationRepository.deleteAll();
 
@@ -80,12 +81,14 @@ public class ImportContestationService {
 
             List<String> listAllEndToEnd = contestationRepository.findAllEndToEnd();
 
+            LocalDate today = LocalDate.now(ZoneId.of("GMT-3"));
+
             rows.filter(r -> r.getRowNum() > 1).forEach(r -> {
 
                 if (validateMainRecords(r, indexE2e)) {
 
                     if (!listAllEndToEnd.contains(r.getCellText(indexE2e).trim()))
-                        contestationRepository.save(createContestation(r, cellsIndex));
+                        contestationRepository.save(createContestation(r, cellsIndex, today));
                 }
             });
             log.info("List size: " + listAllEndToEnd.size());
@@ -112,34 +115,34 @@ public class ImportContestationService {
         return !r.getCellText(indexE2e).isEmpty();
     }
 
-    private Contestation createContestation(Row r, CellsIndex cellsIndex) {
+    private Contestation createContestation(Row row, CellsIndex cellsIndex, LocalDate today) {
 
         LocalDateTime date = null;
         if (cellsIndex.getIndexDate() != null) {
-            if (isValidDate(r, cellsIndex))
-                date = r.getCellAsDate(cellsIndex.getIndexDate()).get();
+            if (isValidDate(row, cellsIndex))
+                date = row.getCellAsDate(cellsIndex.getIndexDate()).get();
         }
 
         BigDecimal value = null;
-        if (!r.getCellText(cellsIndex.getIndexValue()).isEmpty())
-            value = formatValue(r.getCellText(cellsIndex.getIndexValue()));
+        if (!row.getCellText(cellsIndex.getIndexValue()).isEmpty())
+            value = formatValue(row.getCellText(cellsIndex.getIndexValue()));
 
-        String cpfGenerated = removeNonNumericCharacters(r.getCellText(cellsIndex.getIndexCpfGenerated()));
-        String cpfPaid = removeNonNumericCharacters(r.getCellText(cellsIndex.getIndexCpfPaid()));
+        String cpfGenerated = removeNonNumericCharacters(configureScaleCPF(row, cellsIndex.getIndexCpfGenerated()));
+        String cpfPaid = removeNonNumericCharacters(configureScaleCPF(row, cellsIndex.getIndexCpfPaid()));
 
         Contestation contestation = new Contestation(
                 null,
-                r.getCellText(cellsIndex.getIndexE2e()).trim(),
+                row.getCellText(cellsIndex.getIndexE2e()).trim(),
                 date,
-                LocalDate.now(ZoneId.of("GMT-3")),
+                today,
                 value,
-                r.getCellText(cellsIndex.getIndexMerchant()).toUpperCase().trim(),
+                row.getCellText(cellsIndex.getIndexMerchant()).toUpperCase().trim(),
                 StringUtils.leftPad(cpfGenerated, 11, "0"),
                 StringUtils.leftPad(cpfPaid, 11, "0")
         );
 
         System.out.println(contestation);
-        System.out.println("Linha: " + r.getRowNum()+"\n --------------------------");
+        System.out.println("Linha: " + row.getRowNum()+"\n --------------------------");
 
         return contestation;
     }
@@ -175,6 +178,24 @@ public class ImportContestationService {
             value = value.replaceAll("[^0-9]", "");
 
         return value;
+    }
+
+    /**
+     * metodo usado para resolver o problema do FastExcel quanto a leitura
+     * das colunas referente ao CPF para que não seja necessario converte-las
+     * para tipo texto antes da importação
+     *
+     * @param row, cellsIndex
+     * @return cpf ajustado
+     */
+    private String configureScaleCPF(Row row, Integer cellsIndex) {
+        try {
+            BigDecimal cpf = row.getCell(cellsIndex).asNumber();
+
+            return cpf == null ? null : cpf.setScale(0).toString();
+        }catch (ExcelReaderException e) {
+            return row.getCellText(cellsIndex);
+        }
     }
 
     private static void testPrintCells(CellsIndex cellsIndex, Row r) {
