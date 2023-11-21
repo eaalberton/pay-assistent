@@ -235,7 +235,7 @@ public class ContestationService {
     }
 
     private boolean isCpfPayer(String cpf, String cpfPayer) {
-        if (cpfPayer.equals("00000000000") || cpfPayer.equals(cpf))
+        if (cpfPayer == null || cpfPayer.equals("00000000000") || cpfPayer.equals(cpf))
             return true;
 
         return false;
