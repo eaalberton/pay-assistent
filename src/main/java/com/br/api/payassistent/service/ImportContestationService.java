@@ -39,14 +39,15 @@ public class ImportContestationService {
 
 //    @PostConstruct
     public void importContestationsFromExcelFile() throws IOException {
-        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\31-10-2023.xlsx";
+        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\28-11-2023.xlsx";
 
         contestationRepository.deleteAll();
 
         try (FileInputStream file = new FileInputStream(fileLocation); ReadableWorkbook wb = new ReadableWorkbook(file)) {
             readSheet(wb.getFirstSheet(), 0);//aba contestações
-            readSheet(wb.getSheet(2).get(), 2);//aba bit capital
             readSheet(wb.getSheet(1).get(), 1);//aba banco genial
+            readSheet(wb.getSheet(2).get(), 2);//aba bit capital
+            readSheet(wb.getSheet(3).get(), 3);//aba fastcash
         }
 
     }
@@ -57,8 +58,9 @@ public class ImportContestationService {
 
         try (FileInputStream fileInputStream = new FileInputStream(file); ReadableWorkbook wb = new ReadableWorkbook(fileInputStream)) {
             readSheet(wb.getFirstSheet(), 0);//aba contestações
-            readSheet(wb.getSheet(2).get(), 2);//aba bit capital
             readSheet(wb.getSheet(1).get(), 1);//aba banco genial
+            readSheet(wb.getSheet(2).get(), 2);//aba bit capital
+            readSheet(wb.getSheet(3).get(), 3);//aba fastcash
         }
 
         log.info("Novo arquivo: ", file.getAbsolutePath());
@@ -101,11 +103,14 @@ public class ImportContestationService {
         if (sheetNumber == 0)//aba contestações
             return new CellsIndex(1,2,3,4,5,8);
 
-        if (sheetNumber == 2)//aba bit capital
-            return new CellsIndex(1,2,3,4,5,7);
-
         if (sheetNumber == 1)//aba banco genial
             return new CellsIndex(1,2,3,4,5,7);
+
+        if (sheetNumber == 2)//aba bit capital
+            return new CellsIndex(0,1,2,3,4,6);
+
+        if (sheetNumber == 3)//fastcash
+            return new CellsIndex(0,null,2,3,4,6);
 
         return null;
     }
