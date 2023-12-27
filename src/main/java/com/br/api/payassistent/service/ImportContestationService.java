@@ -39,7 +39,7 @@ public class ImportContestationService {
 
 //    @PostConstruct
     public void importContestationsFromExcelFile() throws IOException {
-        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\28-11-2023.xlsx";
+        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\28-12-2023.xlsx";
 
         contestationRepository.deleteAll();
 
@@ -48,6 +48,7 @@ public class ImportContestationService {
             readSheet(wb.getSheet(1).get(), 1);//aba banco genial
             readSheet(wb.getSheet(2).get(), 2);//aba bit capital
             readSheet(wb.getSheet(3).get(), 3);//aba fastcash
+            readSheet(wb.getSheet(4).get(), 4);//aba trio
         }
 
     }
@@ -57,10 +58,11 @@ public class ImportContestationService {
         File file = multipartToFile(multipartFile);
 
         try (FileInputStream fileInputStream = new FileInputStream(file); ReadableWorkbook wb = new ReadableWorkbook(fileInputStream)) {
-            readSheet(wb.getFirstSheet(), 0);//aba contestações
+            readSheet(wb.getFirstSheet(), 0);//aba BS2
             readSheet(wb.getSheet(1).get(), 1);//aba banco genial
             readSheet(wb.getSheet(2).get(), 2);//aba bit capital
             readSheet(wb.getSheet(3).get(), 3);//aba fastcash
+            readSheet(wb.getSheet(4).get(), 4);//aba trio
         }
 
         log.info("Novo arquivo: ", file.getAbsolutePath());
@@ -100,7 +102,7 @@ public class ImportContestationService {
     }
 
     private CellsIndex getInstanceCellsIndex(int sheetNumber) {
-        if (sheetNumber == 0)//aba contestações
+        if (sheetNumber == 0)//aba BS2
             return new CellsIndex(1,2,3,4,5,8);
 
         if (sheetNumber == 1)//aba banco genial
@@ -109,8 +111,11 @@ public class ImportContestationService {
         if (sheetNumber == 2)//aba bit capital
             return new CellsIndex(0,1,2,3,4,6);
 
-        if (sheetNumber == 3)//fastcash
+        if (sheetNumber == 3)//aba fastcash
             return new CellsIndex(0,null,2,3,4,6);
+
+        if (sheetNumber == 4)//aba trio
+            return new CellsIndex(0,1,2,3,4,7);
 
         return null;
     }
