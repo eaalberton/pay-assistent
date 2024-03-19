@@ -11,6 +11,8 @@ import java.util.List;
 @Repository
 public interface CustomerServiceRepository extends JpaRepository<CustomerService, Long> {
 
-    List<CustomerService> findByDateBetweenAndUserId(LocalDateTime startDate, LocalDateTime endDate, Integer userId);
+    List<CustomerService> findByDateBetweenAndUserId(LocalDateTime startDate, LocalDateTime endDate, Long idUser);
+
+    List<CustomerService> findByDateBetweenAndUserIdAndMerchantId(LocalDateTime startDate, LocalDateTime endDate, Long idUser, Long idMerchant);
 
 }
