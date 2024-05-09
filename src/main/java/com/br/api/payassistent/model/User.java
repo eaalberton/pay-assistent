@@ -25,4 +25,10 @@ public class User {
     @Size(max = 100)
     private String password;
 
+    @Size(max = 100)
+    private String name;
+
+    @Size(max = 50)
+    private String shift;
+
 }

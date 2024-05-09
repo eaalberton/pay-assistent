@@ -42,4 +42,10 @@ public class AuthController {
             return ResponseEntity.ok(Arrays.asList("Token valid"));
     }
 
+    @GetMapping("/find-user-by-id")
+    public ResponseEntity<UserDto> findById(@RequestParam String id) {
+        UserDto userDto = userService.findById(id);
+        return ResponseEntity.ok(userDto);
+    }
+
 }

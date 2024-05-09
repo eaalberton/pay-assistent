@@ -3,6 +3,7 @@ package com.br.api.payassistent.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -32,9 +33,13 @@ public class CustomerService {
     @JoinColumn(name = "id_user")
     private User user;
 
-    @NotBlank
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
-    private LocalDateTime date;
+    @NotNull
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm")
+    private LocalDateTime dateStart;
+
+    @NotNull
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm")
+    private LocalDateTime dateEnd;
 
     @NotBlank
     private String shift;
@@ -42,7 +47,7 @@ public class CustomerService {
     @NotBlank
     private String supportLevel;
 
-    @NotBlank
-    private String resolutionTime;
+    @NotNull
+    private Integer quantity;
 
 }

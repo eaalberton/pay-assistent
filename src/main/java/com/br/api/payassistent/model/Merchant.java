@@ -22,6 +22,8 @@ public class Merchant {
 
     private String platform;
 
+    private String platformRequest;
+
     private String accountManager;
 
 }

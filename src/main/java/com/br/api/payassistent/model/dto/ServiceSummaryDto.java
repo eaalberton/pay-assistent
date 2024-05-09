@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ServiceSummaryDto {
 
+    private Long id;
     private String merchant;
-    private Integer quantity;
+    private Long quantity;
 
 }
