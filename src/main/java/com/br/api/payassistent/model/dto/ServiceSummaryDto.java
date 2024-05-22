@@ -1,6 +1,5 @@
 package com.br.api.payassistent.model.dto;
 
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,12 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserDto {
+public class ServiceSummaryDto {
 
     private Long id;
-    private String login;
-    private String token;
-    private String name;
-    private String shift;
+    private String merchant;
+    private Long quantity;
 
 }
