@@ -24,8 +24,9 @@ public interface CustomerServiceRepository extends JpaRepository<CustomerService
     + "FROM CustomerService cs                                          "
     + "INNER JOIN  Merchant me on cs.merchant.id = me.id                "
     + "WHERE cs.user.id = ?3                                            "
-    + "AND cs.dateStart BETWEEN ?1 AND ?2                              "
-    + "GROUP BY me.id, me.name                                                 "
+    + "AND cs.dateStart BETWEEN ?1 AND ?2                               "
+    + "GROUP BY me.id, me.name                                          "
+    + "ORDER BY me.name ASC                                             "
     )
     List<ServiceSummaryDto> findCustomerServicesSummaryOfDayByUser(LocalDateTime startDate, LocalDateTime endDate, Long idUser);
 
