@@ -2,6 +2,7 @@ package com.br.api.payassistent.service;
 
 import com.br.api.payassistent.model.CellsIndex;
 import com.br.api.payassistent.model.Contestation;
+import com.br.api.payassistent.model.EnumSituation;
 import com.br.api.payassistent.repository.ContestationRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -40,12 +41,12 @@ public class ImportContestationService {
 //    @PostConstruct
     public void importContestationsFromExcelFile() throws IOException {
 
-        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\24-04-2024.xlsx";
+        String fileLocation = "C:\\Users\\AllBiNo\\Downloads\\21-08-2024A.xlsx";
 
-        contestationRepository.deleteAll();
+//        contestationRepository.deleteAll();
 
         try (FileInputStream file = new FileInputStream(fileLocation); ReadableWorkbook wb = new ReadableWorkbook(file)) {
-            readSheet(wb.getFirstSheet(), 0);//aba contestações
+            readSheet(wb.getFirstSheet(), 0);//aba BS2
             readSheet(wb.getSheet(1).get(), 1);//aba banco genial
             readSheet(wb.getSheet(2).get(), 2);//aba bit capital
             readSheet(wb.getSheet(3).get(), 3);//aba fastcash
@@ -84,6 +85,8 @@ public class ImportContestationService {
 
             Integer indexE2e = getInstanceCellsIndex(sheetNumber).getIndexE2e();
 
+            Integer indexSituation = getInstanceCellsIndex(sheetNumber).getIndexSituation();
+
             List<String> listAllEndToEnd = contestationRepository.findAllEndToEnd();
 
             LocalDate today = LocalDate.now(ZoneId.of("GMT-3"));
@@ -92,8 +95,25 @@ public class ImportContestationService {
 
                 if (validateMainRecords(r, indexE2e)) {
 
+                    boolean canceledRecord = validateCanceledRecords(r,indexSituation);
+
                     if (!listAllEndToEnd.contains(r.getCellText(indexE2e).trim()))
-                        contestationRepository.save(createContestation(r, cellsIndex, today));
+                        contestationRepository.save(createContestation(r, cellsIndex, today, canceledRecord));
+
+                    else if (canceledRecord) {
+                        //alterado para lista pois na planilha tem algumas contestações duplicadas
+                        List<Contestation> recordToCancel = recordToCancel = contestationRepository.findByEndToEnd(r.getCellText(indexE2e));
+
+                       if (recordToCancel != null && !recordToCancel.isEmpty()) {
+                           recordToCancel.forEach(record -> {
+                               if (!EnumSituation.CANCELED.equals(record.getSituation())) {
+                                   record.setSituation(EnumSituation.CANCELED);
+                                   contestationRepository.save(record);
+                                   System.out.println("Atualizou cancelado: "+ record);
+                               }
+                           });
+                       }
+                    }
                 }
             });
             log.info("List size: " + listAllEndToEnd.size());
@@ -104,19 +124,19 @@ public class ImportContestationService {
 
     private CellsIndex getInstanceCellsIndex(int sheetNumber) {
         if (sheetNumber == 0)//aba BS2
-            return new CellsIndex(1,2,3,4,5,8);
+            return new CellsIndex(1,2,3,4,5,8, 9);
 
         if (sheetNumber == 1)//aba banco genial
-            return new CellsIndex(1,2,3,4,5,7);
+            return new CellsIndex(1,2,3,4,5,7, 9);
 
         if (sheetNumber == 2)//aba bit capital
-            return new CellsIndex(0,1,2,3,4,6);
+            return new CellsIndex(0,1,2,3,4,6,8);
 
         if (sheetNumber == 3)//aba fastcash
-            return new CellsIndex(0,null,2,3,4,6);
+            return new CellsIndex(0,null,2,3,4,6, 8);
 
         if (sheetNumber == 4)//aba trio
-            return new CellsIndex(0,1,2,3,4,7);
+            return new CellsIndex(0,1,2,3,4,7, 8);
 
         return null;
     }
@@ -126,7 +146,17 @@ public class ImportContestationService {
         return !r.getCellText(indexE2e).isEmpty();
     }
 
-    private Contestation createContestation(Row row, CellsIndex cellsIndex, LocalDate today) {
+    private boolean validateCanceledRecords(Row r, int indexSituation) {
+
+        if (!r.getCellText(indexSituation).isEmpty()
+                && r.getCellText(indexSituation).equals("CANCELADA")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private Contestation createContestation(Row row, CellsIndex cellsIndex, LocalDate today, boolean canceledRecord) {
 
         LocalDateTime date = null;
         if (cellsIndex.getIndexDate() != null) {
@@ -141,6 +171,10 @@ public class ImportContestationService {
         String cpfGenerated = removeNonNumericCharacters(configureScaleCPF(row, cellsIndex.getIndexCpfGenerated()));
         String cpfPaid = removeNonNumericCharacters(configureScaleCPF(row, cellsIndex.getIndexCpfPaid()));
 
+        EnumSituation situation = null;
+        if (canceledRecord)
+            situation = EnumSituation.CANCELED;
+
         Contestation contestation = new Contestation(
                 null,
                 row.getCellText(cellsIndex.getIndexE2e()).trim(),
@@ -149,7 +183,8 @@ public class ImportContestationService {
                 value,
                 row.getCellText(cellsIndex.getIndexMerchant()).toUpperCase().trim(),
                 StringUtils.leftPad(cpfGenerated, 11, "0"),
-                StringUtils.leftPad(cpfPaid, 11, "0")
+                StringUtils.leftPad(cpfPaid, 11, "0"),
+                situation
         );
 
         System.out.println(contestation);

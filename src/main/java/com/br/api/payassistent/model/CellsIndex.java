@@ -15,5 +15,6 @@ public class CellsIndex {
     private Integer indexMerchant;
     private Integer indexCpfGenerated;
     private Integer indexCpfPaid;
+    private Integer indexSituation;
 
 }
