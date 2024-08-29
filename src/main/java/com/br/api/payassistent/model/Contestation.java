@@ -40,6 +40,8 @@ public class Contestation {
 
     private String cpfPaid;
 
+    private EnumSituation situation;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

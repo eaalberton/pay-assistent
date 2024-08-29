@@ -2,6 +2,7 @@ package com.br.api.payassistent.service;
 
 import com.br.api.payassistent.model.Bank;
 import com.br.api.payassistent.model.Contestation;
+import com.br.api.payassistent.model.EnumSituation;
 import com.br.api.payassistent.model.dto.CheckContestationDTO;
 import com.br.api.payassistent.repository.BankRepository;
 import com.br.api.payassistent.repository.ContestationRepository;
@@ -69,7 +70,16 @@ public class ContestationService {
 
         try {
             if (isValidFilters(cpf, merchant, sbContestations)) {
+
                 List<Contestation> contestations = repository.findByCpfGeneratedOrCpfPaid(cpf, cpf);
+
+                if (!merchant.toUpperCase().trim().equals("PAYBROKERS")) {
+                    //remove canceled contestations from the list
+                    if (contestations != null && !contestations.isEmpty()) {
+                        contestations = contestations.stream().filter(contestation ->
+                                !EnumSituation.CANCELED.equals(contestation.getSituation())).toList();
+                    }
+                }
 
                 validateContestations(contestations, sbContestations, cpf, merchant.toUpperCase(), isEnglish);
             }
@@ -93,15 +103,50 @@ public class ContestationService {
     }
 
     private void createReplyMessage(List<Contestation> contestations, StringBuilder sbContestations, String cpf, String merchant, boolean isEnglish) {
-        if (isEnglish) {
-            createSameMerchantMessageEnglish(contestations,sbContestations, cpf, merchant);
-            createDifferentMerchantMessageEnglish(contestations,sbContestations, cpf, merchant);
-            createFooterMessageEnglish(sbContestations);
+
+        if (merchant.toUpperCase().trim().equals("PAYBROKERS")) {
+            createPaybrokersTeamResearchMessage(contestations,sbContestations);
         } else {
-            createSameMerchantMessage(contestations,sbContestations, cpf, merchant);
-            createDifferentMerchantMessage(contestations,sbContestations, cpf, merchant);
-            createFooterMessage(sbContestations);
+            if (isEnglish) {
+                createSameMerchantMessageEnglish(contestations,sbContestations, cpf, merchant);
+                createDifferentMerchantMessageEnglish(contestations,sbContestations, cpf, merchant);
+                createFooterMessageEnglish(sbContestations);
+            } else {
+                createSameMerchantMessage(contestations,sbContestations, cpf, merchant);
+                createDifferentMerchantMessage(contestations,sbContestations, cpf, merchant);
+                createFooterMessage(sbContestations);
+            }
         }
+    }
+
+    private void createPaybrokersTeamResearchMessage(List<Contestation> contestations, StringBuilder sbContestations) {
+
+        contestations.forEach(contestation -> {
+                    sbContestations.append("ID: ");
+                    sbContestations.append(contestation.getEndToEnd());
+                    sbContestations.append("    Valor: ");
+                    sbContestations.append(formatMonetaryValue(contestation.getValue(), false));
+
+                    sbContestations.append("\n");
+                    sbContestations.append("Data: ");
+                    sbContestations.append(formatDateToString(contestation.getDate(), false));
+                    sbContestations.append("    Banco: ");
+                    sbContestations.append(getBank(contestation.getEndToEnd()));
+
+                    sbContestations.append("\n");
+                    sbContestations.append("Gerado por: ");
+                    sbContestations.append(contestation.getCpfGenerated());
+                    sbContestations.append("    Pago por: ");
+                    sbContestations.append(contestation.getCpfPaid());
+
+                    sbContestations.append("\n");
+                    sbContestations.append("Merchant: ");
+                    sbContestations.append(contestation.getMerchant());
+                    sbContestations.append("    Situação: ");
+                    sbContestations.append(getTextSituation(contestation.getSituation()));
+
+                    sbContestations.append("\n\n");
+                });
     }
 
     private void createSameMerchantMessage(List<Contestation> contestations, StringBuilder sbContestations, String cpf, String merchant) {
@@ -243,6 +288,13 @@ public class ContestationService {
         sbContestations.append("closing the dispute, afterwards they need to send us proof of cancellation (Screenshot ");
         sbContestations.append("of the conversation with the bank); in the proof it needs to contain the transaction IDs so that it ");
         sbContestations.append("can be sent for analysis and thus being able to remove it from the blacklist upon aproval.*");
+    }
+
+    private String getTextSituation(EnumSituation situation) {
+        if (EnumSituation.CANCELED.equals(situation))
+            return "CANCELADA";
+        else
+            return "ATIVA";
     }
 
     private boolean isCpfGeneratorSameCpfPayer(String cpfGenerator, String cpfPayer) {
