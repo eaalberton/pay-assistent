@@ -26,7 +26,7 @@ public class MerchantService {
     private void saveMerchantsFromCsvFile() {
         try {
             // create a reader
-            Reader reader = Files.newBufferedReader(Paths.get("C:\\Users\\AllBiNo\\Documents\\Merchants.csv"));
+            Reader reader = Files.newBufferedReader(Paths.get("C:\\Users\\AllBiNo\\Documents\\Infos PB Assistent\\Merchants - 1.csv"));
 
             // create csv reader
             CSVReader csvReader = new CSVReaderBuilder(reader)

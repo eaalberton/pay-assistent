@@ -50,4 +50,6 @@ public class CustomerService {
     @NotNull
     private Integer quantity;
 
+    @NotBlank
+    private String company;
 }
