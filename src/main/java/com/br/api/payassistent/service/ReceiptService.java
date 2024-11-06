@@ -8,6 +8,7 @@ import com.br.api.payassistent.repository.BankRepository;
 import net.sf.jasperreports.engine.*;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
@@ -32,9 +33,9 @@ public class ReceiptService {
     @Autowired
     BankRepository bankRepository;
 
-    public static final String REPORTS = "classpath:jasper/reports/";
+    public static final String REPORTS = "jasper/reports/";//"classpath:jasper/reports/";
 
-    public static final String IMAGEBG = "classpath:jasper/img/receipt layout.png";
+    public static final String IMAGEBG = "jasper/img/receipt layout.png";//"classpath:jasper/img/receipt layout.png";
 
     public static final String JRXML_FILE = "receipt.jrxml";
 
@@ -162,7 +163,8 @@ public class ReceiptService {
     }
 
     private byte[] loadImageBg(String imagebg) throws IOException {
-        String image = ResourceUtils.getFile(imagebg).getAbsolutePath();
+//        String image = ResourceUtils.getFile(imagebg).getAbsolutePath();
+        String image = new ClassPathResource(imagebg).getFile().getAbsolutePath();
         File file = new File(image);
         try(InputStream inputStream = new FileInputStream(file)) {
             return IOUtils.toByteArray(inputStream);
@@ -181,8 +183,9 @@ public class ReceiptService {
             dir.mkdir();
     }
 
-    private String getAbsolutPath() throws FileNotFoundException {
-        return ResourceUtils.getFile(REPORTS + JRXML_FILE).getAbsolutePath();
+    private String getAbsolutPath() throws IOException {
+//        return ResourceUtils.getFile(REPORTS + JRXML_FILE).getAbsolutePath();
+        return new ClassPathResource(REPORTS + JRXML_FILE).getFile().getAbsolutePath();
     }
 
     private void fillReceipt(ReceiptDTO receipt, Map<String, String> mapReceiptData) {
