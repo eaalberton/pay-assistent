@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 7.0.1.final using JasperReports Library version 6.20.6  -->
+<!-- 2024-11-06T03:27:00 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="receipt" pageWidth="595" pageHeight="842" orientation="Landscape" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="b5e2f680-3247-4543-aa95-c931ff2f8c33">
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="dateTransactionKey" class="java.lang.String"/>
+	<parameter name="dateTransaction" class="java.lang.String"/>
+	<parameter name="descriptionKey" class="java.lang.String"/>
+	<parameter name="description" class="java.lang.String"/>
+	<parameter name="valueKey" class="java.lang.String"/>
+	<parameter name="value" class="java.lang.String"/>
+	<parameter name="receiverNameKey" class="java.lang.String"/>
+	<parameter name="receiverName" class="java.lang.String"/>
+	<parameter name="receiverDocumentKey" class="java.lang.String"/>
+	<parameter name="receiverDocument" class="java.lang.String"/>
+	<parameter name="receiverBankKey" class="java.lang.String"/>
+	<parameter name="receiverBank" class="java.lang.String"/>
+	<parameter name="receiverAgencyKey" class="java.lang.String"/>
+	<parameter name="receiverAgency" class="java.lang.String"/>
+	<parameter name="receiverAccountKey" class="java.lang.String"/>
+	<parameter name="receiverAccount" class="java.lang.String"/>
+	<parameter name="payerNameKey" class="java.lang.String"/>
+	<parameter name="payerName" class="java.lang.String"/>
+	<parameter name="payerDocumentKey" class="java.lang.String"/>
+	<parameter name="payerDocument" class="java.lang.String"/>
+	<parameter name="payerBankKey" class="java.lang.String"/>
+	<parameter name="payerBank" class="java.lang.String"/>
+	<parameter name="transactionIdKey" class="java.lang.String"/>
+	<parameter name="transactionId" class="java.lang.String"/>
+	<parameter name="protocolKey" class="java.lang.String"/>
+	<parameter name="protocol" class="java.lang.String"/>
+	<parameter name="dateGenerated" class="java.lang.String"/>
+	<parameter name="receipt layout" class="java.lang.Object"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="842" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<image>
+				<reportElement x="0" y="0" width="595" height="841" uuid="e6797525-2199-433f-a1f9-49ae5938bfdf">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{receipt layout}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="15" y="161" width="161" height="30" uuid="b70ae9a3-5356-41bc-a7cd-f03c833656dd"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dateTransactionKey}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="15" y="204" width="161" height="30" uuid="4fc5b53e-c78b-4825-a83d-0c9086375b98"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{descriptionKey}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="15" y="248" width="161" height="30" uuid="fe670af0-bb69-45c7-9c39-7e9863433e83"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{valueKey}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="15" y="331" width="161" height="30" uuid="f73401d8-eb71-42bb-9bff-90ab6baec769"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{receiverNameKey}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="15" y="373" width="161" height="30" uuid="4dbc5338-ba15-4cc8-b9bf-fd5b2ee62309"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{receiverDocumentKey}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="15" y="416" width="161" height="30" uuid="6461547a-c741-4238-8a64-2759ecf4f33b"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{receiverBankKey}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="15" y="458" width="161" height="30" uuid="81d4924d-9366-46f6-ace1-e539ff6290ce"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{receiverAgencyKey}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="15" y="501" width="161" height="30" uuid="34effdd1-7707-4742-9008-189e567972c1"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{receiverAccountKey}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="15" y="585" width="161" height="30" uuid="f20a236c-b022-4449-b10b-b19835d6be8a"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{payerNameKey}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="15" y="627" width="161" height="30" uuid="49ffd673-f69c-4544-9ab3-c7066a615cf1"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{payerDocumentKey}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="15" y="670" width="161" height="30" uuid="4d1cd861-1a22-493c-93ec-6ee12d3bc1c9"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{payerBankKey}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="15" y="713" width="161" height="30" uuid="fed904bd-7d86-4e3d-b519-c0daf3fe68ba"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{transactionIdKey}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="15" y="755" width="161" height="30" uuid="0fafde1a-9dcd-4f70-8993-688c3ff454e2"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{protocolKey}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="188" y="162" width="391" height="30" uuid="338236d1-cedb-4012-9694-8a4fb02fc602"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dateTransaction}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="188" y="205" width="391" height="30" uuid="2a9d4a28-5484-4886-97e8-1ffb0f6d8ef7"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{description}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="188" y="248" width="391" height="30" uuid="424780d0-95e5-4337-a723-b4cc88448ecb"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{value}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="188" y="331" width="391" height="30" uuid="a09ebd6f-deba-4013-8e54-4f466db41467"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{receiverName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="188" y="373" width="391" height="30" uuid="0e00605f-d82d-4f39-b444-25f76815d395"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{receiverDocument}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="188" y="416" width="391" height="30" uuid="d907be0f-f8d0-4168-bd5c-8ac8b6e6d478"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{receiverBank}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="188" y="458" width="391" height="30" uuid="002bf763-42b3-4c1e-958e-e2885f0de5bc"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{receiverAgency}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="188" y="501" width="391" height="30" uuid="8fc2d894-d8b0-45a6-9805-0ddf92b0eeec"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{receiverAccount}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="188" y="585" width="391" height="30" uuid="31b9c2f9-3c39-4b3b-84c3-1ca9733af006"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{payerName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="188" y="627" width="391" height="30" uuid="740fc6ae-05a4-46cb-9abc-473ad6dc6280"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{payerDocument}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="188" y="670" width="391" height="30" uuid="d9946724-f8c0-4dc5-a4f5-941355add7bb"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{payerBank}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="188" y="713" width="391" height="30" uuid="1f95e72e-f05c-41a2-85d2-9f4f36fb7f3c"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{transactionId}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="188" y="755" width="391" height="30" uuid="8ff3b86f-5345-4ddf-91fc-ff76b91bed37"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Serif Condensed" size="19" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{protocol}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="97" y="808" width="185" height="30" forecolor="#FFFFFF" uuid="b083f678-95e4-4423-aa5e-e639814fd624"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Franklin Gothic Book" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dateGenerated}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+</jasperReport>
