@@ -33,9 +33,9 @@ public class ReceiptService {
     @Autowired
     BankRepository bankRepository;
 
-    public static final String REPORTS = "jasper/reports/";//"classpath:jasper/reports/";
+    public static final String REPORTS = "/jasper/reports/";//"classpath:jasper/reports/";
 
-    public static final String IMAGEBG = "jasper/img/receipt layout.png";//"classpath:jasper/img/receipt layout.png";
+    public static final String IMAGEBG = "/jasper/img/receipt_layout.png";//"classpath:jasper/img/receipt_layout.png";
 
     public static final String JRXML_FILE = "receipt.jrxml";
 
@@ -96,9 +96,9 @@ public class ReceiptService {
         Map<String, Object> mapParams = parameters(receiptDTO);
         mapParams.put("receipt layout", imagebg);
 
-        String absolutPath = getAbsolutPath();
+//        String absolutPath = getAbsolutPath();
 
-        JasperReport jasperReport = JasperCompileManager.compileReport(absolutPath);
+        JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream(REPORTS + JRXML_FILE));
 
         JasperPrint print = JasperFillManager.fillReport(jasperReport, mapParams, new JREmptyDataSource());
 
@@ -148,7 +148,7 @@ public class ReceiptService {
 
         String folder = getPathToSave("receipt");
 
-        JasperReport jasperReport = JasperCompileManager.compileReport(absolutPath);
+        JasperReport jasperReport = JasperCompileManager.compileReport(getPathToSave("receipt"));
 
         JasperPrint print = JasperFillManager.fillReport(jasperReport, mapParams, new JREmptyDataSource());
 
@@ -164,11 +164,14 @@ public class ReceiptService {
 
     private byte[] loadImageBg(String imagebg) throws IOException {
 //        String image = ResourceUtils.getFile(imagebg).getAbsolutePath();
-        String image = new ClassPathResource(imagebg).getFile().getAbsolutePath();
-        File file = new File(image);
-        try(InputStream inputStream = new FileInputStream(file)) {
-            return IOUtils.toByteArray(inputStream);
-        }
+
+//        String image = new ClassPathResource(imagebg).getFile().getAbsolutePath();
+//        File file = new File(image);
+//        try(InputStream inputStream = new FileInputStream(file)) {
+//            return IOUtils.toByteArray(inputStream);
+//        }
+        return IOUtils.toByteArray(getClass().getResourceAsStream(imagebg));
+
     }
 
     private String getPathToSave(String fileName) throws FileNotFoundException {
