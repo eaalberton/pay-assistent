@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 7.0.1.final using JasperReports Library version 6.20.6  -->
-<!-- 2024-11-06T03:27:00 -->
+<!-- 2024-11-07T04:26:21 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="receipt" pageWidth="595" pageHeight="842" orientation="Landscape" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="b5e2f680-3247-4543-aa95-c931ff2f8c33">
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
@@ -240,7 +240,7 @@
 			<textField>
 				<reportElement x="97" y="808" width="185" height="30" forecolor="#FFFFFF" uuid="b083f678-95e4-4423-aa5e-e639814fd624"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Franklin Gothic Book" size="11" isBold="false"/>
+					<font fontName="DejaVu Serif Condensed" size="11" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{dateGenerated}]]></textFieldExpression>
 			</textField>
