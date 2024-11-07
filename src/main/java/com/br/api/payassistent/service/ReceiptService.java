@@ -13,7 +13,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -33,9 +32,9 @@ public class ReceiptService {
     @Autowired
     BankRepository bankRepository;
 
-    public static final String REPORTS = "/jasper/reports/";//"classpath:jasper/reports/";
+    public static final String REPORTS = "/jasper/reports/";
 
-    public static final String IMAGEBG = "/jasper/img/receipt_layout.png";//"classpath:jasper/img/receipt_layout.png";
+    public static final String IMAGEBG = "/jasper/img/receipt_layout.png";
 
     public static final String JRXML_FILE = "receipt.jrxml";
 
@@ -96,9 +95,8 @@ public class ReceiptService {
         Map<String, Object> mapParams = parameters(receiptDTO);
         mapParams.put("receipt layout", imagebg);
 
-//        String absolutPath = getAbsolutPath();
-
-        JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream(REPORTS + JRXML_FILE));
+        JasperReport jasperReport = JasperCompileManager.compileReport(getClass()
+                .getResourceAsStream(REPORTS + JRXML_FILE));
 
         JasperPrint print = JasperFillManager.fillReport(jasperReport, mapParams, new JREmptyDataSource());
 
@@ -163,15 +161,7 @@ public class ReceiptService {
     }
 
     private byte[] loadImageBg(String imagebg) throws IOException {
-//        String image = ResourceUtils.getFile(imagebg).getAbsolutePath();
-
-//        String image = new ClassPathResource(imagebg).getFile().getAbsolutePath();
-//        File file = new File(image);
-//        try(InputStream inputStream = new FileInputStream(file)) {
-//            return IOUtils.toByteArray(inputStream);
-//        }
         return IOUtils.toByteArray(getClass().getResourceAsStream(imagebg));
-
     }
 
     private String getPathToSave(String fileName) throws FileNotFoundException {
@@ -187,7 +177,6 @@ public class ReceiptService {
     }
 
     private String getAbsolutPath() throws IOException {
-//        return ResourceUtils.getFile(REPORTS + JRXML_FILE).getAbsolutePath();
         return new ClassPathResource(REPORTS + JRXML_FILE).getFile().getAbsolutePath();
     }
 
@@ -319,131 +308,5 @@ public class ReceiptService {
 
         return receiptDTO;
     }
-
-    //test convert object entity to map by reflection
-//    public static void main(String[] args) {
-//        ReceiptDTO receiptDTO = new ReceiptDTO();
-//
-//        receiptDTO.setDateTransactionKey("Data:");
-//        receiptDTO.setDescriptionKey("Descrição:");
-//        receiptDTO.setValueKey("Valor:");
-//
-//        receiptDTO.setReceiverNameKey("Nome:");
-//        receiptDTO.setReceiverDocumentKey("CPF/CPNJ:");
-//        receiptDTO.setReceiverBankKey("Bank:");
-//        receiptDTO.setReceiverAgencyKey("Agência:");
-//        receiptDTO.setReceiverAccountKey("Conta:");
-//
-//        receiptDTO.setPayerNameKey("Nome:");
-//        receiptDTO.setPayerDocumentKey("Documento:");
-//        receiptDTO.setPayerBankKey("Banco:");
-//        receiptDTO.setTransactionIdKey("ID da Transação");
-//        receiptDTO.setProtocolKey("Protocolo");
-//
-//        receiptDTO.setDescription("Reembolso de Transação");
-//        receiptDTO.setPayerName("PagFast Cobrança e Serviço em Tecnologia Ltda");
-//        receiptDTO.setPayerDocument("46.261.360/0001-48");
-//
-//        receiptDTO.setReceiverBank(" - ");
-//        receiptDTO.setReceiverAgency(" - ");
-//        receiptDTO.setReceiverAccount(" - ");
-//
-//        Map<String, Object> map = parameters(receiptDTO);
-//        for (Map.Entry<String, Object> entry : map.entrySet()) {
-//            System.out.println(entry.getKey() + ": " + entry.getValue());
-//        }
-//    }
-
-//    public static void main(String[] args) {
-//        String data = "statusCode: \"Done\"\n" +
-//                "data:\n" +
-//                "endToEndId: \"E004169682024102323553n5nAGPMHOP\"\n" +
-//                "endToEndIdOrigem: null\n" +
-//                "recebimentoId: 1441172580\n" +
-//                "txId: \"006d3786d82d4291838760452dc3b90e\"\n" +
-//                "data: \"2024-10-23T20:55:40.247-03:00\"\n" +
-//                "valor: 160\n" +
-//                "status: \"Efetivado\"\n" +
-//                "pagador:\n" +
-//                "ispb: \"00416968\"\n" +
-//                "conta:\n" +
-//                "banco: \"77\"\n" +
-//                "bancoNome: \"BANCO INTER\"\n" +
-//                "agencia: \"0001\"\n" +
-//                "numero: \"0332106870\"\n" +
-//                "tipo: \"ContaCorrente\"\n" +
-//                "pessoa:\n" +
-//                "documento: \"09004705775\"\n" +
-//                "tipoDocumento: \"CPF\"\n" +
-//                "nome: \"VIVIANE LOURENCO NUNES GOMES GAMA\"\n" +
-//                "nomeFantasia: null\n" +
-//                "conta: null\n" +
-//                "recebedor:\n" +
-//                "ispb: \"71027866\"\n" +
-//                "conta:\n" +
-//                "banco: \"218\"\n" +
-//                "bancoNome: \"BCO BS2 S.A.\"\n" +
-//                "agencia: \"0001\"\n" +
-//                "numero: \"11384190\"\n" +
-//                "tipo: \"ContaCorrente\"\n" +
-//                "pessoa:\n" +
-//                "documento: \"46261360000148\"\n" +
-//                "tipoDocumento: \"CNPJ\"\n" +
-//                "nome: \"PAGFAST\"\n" +
-//                "nomeFantasia: null\n" +
-//                "conta: null\n" +
-//                "chaveDict: \"b9e544eb-ee92-4d57-8665-c42f60d6fd65\"\n" +
-//                "campoLivre: null\n" +
-//                "situacao: \"ACCC\"\n" +
-//                "devolucoes:\n" +
-//                "0:\n" +
-//                "id: \"1f6604e9a95d4d7896cac2a224d8d4e1\"\n" +
-//                "rtrId: \"D71027866202410232355426139JCKBD\"\n" +
-//                "valor: 160\n" +
-//                "horario:\n" +
-//                "solicitacao: \"2024-10-23T20:55:42.613-03:00\"\n" +
-//                "liquidacao: \"2024-10-23T20:55:44.263-03:00\"\n" +
-//                "status: \"DEVOLVIDO\"\n" +
-//                "motivo: \"Solicitado pelo cliente\"\n" +
-//                "erroDescricao: null\n" +
-//                "erroCodigo: null\n" +
-//                "pagina:\n" +
-//                "qtd: 1\n" +
-//                "paginaAtual: 1\n" +
-//                "itensPorPagina: 1";
-//
-//        Map<String, String> mapReceiptData = new HashMap<>();
-//
-//        boolean isPayer = false;
-//
-//        data = data.replaceAll("\"", "");
-//
-//        String[] split = data.split("\n");
-//
-//        for (int i = 0; i< split.length; i++) {
-//
-//            String[] splitAux = split[i].split(": ");
-//
-//            if (splitAux.length > 1) {
-//                if (isPayer)
-//                    mapReceiptData.put("payer-" + splitAux[0], splitAux[1]);
-//                else
-//                    mapReceiptData.put(splitAux[0], splitAux[1]);
-//
-//                if (isPayer && splitAux[0].equals("conta"))
-//                    isPayer = false;
-//
-//            } else if (splitAux[0].equals("pagador:"))
-//                isPayer = true;
-//            else if (splitAux[0].equals("devolucoes:"))
-//                isPayer = false;
-//
-//        }
-//
-//        mapReceiptData.keySet().forEach(key -> {
-//            System.out.println(key + " - " + mapReceiptData.get(key));
-//            System.out.println(" ");
-//        });
-//    }
 
 }
