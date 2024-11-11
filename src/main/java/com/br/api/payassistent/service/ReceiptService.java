@@ -8,7 +8,6 @@ import com.br.api.payassistent.repository.BankRepository;
 import net.sf.jasperreports.engine.*;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
@@ -21,6 +20,7 @@ import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Locale;
@@ -41,9 +41,8 @@ public class ReceiptService {
     public static final String DESTINY = "C:\\jasper-reports\\";
 
     DecimalFormat decimalFormat;
-    DateTimeFormatter dateFormat;
 
-    public FileDTO generateReceiptInMemory(ReceiptDTO receiptDTO) throws IOException {
+    public FileDTO generateReceiptInMemory(ReceiptDTO receiptDTO) {
 
         if (!receiptDTO.getMetadata().startsWith("statusCode")
             || !receiptDTO.getMetadata().contains("endToEndId")) {
@@ -90,7 +89,7 @@ public class ReceiptService {
 
     public byte[] generateReportInMemory(ReceiptDTO receiptDTO) throws IOException, JRException {
 
-        byte[] imagebg = loadImageBg(IMAGEBG);
+        byte[] imagebg = loadImageBg();
 
         Map<String, Object> mapParams = parameters(receiptDTO);
         mapParams.put("receipt layout", imagebg);
@@ -104,7 +103,7 @@ public class ReceiptService {
 
     }
 
-    public Resource generateReceipt(ReceiptDTO receiptDTO) throws IOException {
+    public Resource generateReceipt(ReceiptDTO receiptDTO) {
 
         System.out.println(receiptDTO.getMetadata());
 
@@ -137,12 +136,10 @@ public class ReceiptService {
 
     public Resource generateReport(ReceiptDTO receiptDTO) throws IOException, JRException {
 
-        byte[] imagebg = loadImageBg(IMAGEBG);
+        byte[] imagebg = loadImageBg();
 
         Map<String, Object> mapParams = parameters(receiptDTO);
         mapParams.put("receipt layout", imagebg);
-
-        String absolutPath = getAbsolutPath();
 
         String folder = getPathToSave("receipt");
 
@@ -160,11 +157,11 @@ public class ReceiptService {
 
     }
 
-    private byte[] loadImageBg(String imagebg) throws IOException {
-        return IOUtils.toByteArray(getClass().getResourceAsStream(imagebg));
+    private byte[] loadImageBg() throws IOException {
+        return IOUtils.toByteArray(getClass().getResourceAsStream(ReceiptService.IMAGEBG));
     }
 
-    private String getPathToSave(String fileName) throws FileNotFoundException {
+    private String getPathToSave(String fileName) {
         createDestinyPath(DESTINY);
         return DESTINY + fileName.concat(".pdf");
     }
@@ -176,10 +173,6 @@ public class ReceiptService {
             dir.mkdir();
     }
 
-    private String getAbsolutPath() throws IOException {
-        return new ClassPathResource(REPORTS + JRXML_FILE).getFile().getAbsolutePath();
-    }
-
     private void fillReceipt(ReceiptDTO receipt, Map<String, String> mapReceiptData) {
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss", new Locale("pt", "BR"));
@@ -189,7 +182,11 @@ public class ReceiptService {
 
         String dateTransaction = LocalDateTime.parse(dateAux, dateFormatter1).format(dateFormatter);
 
-        String receiverDocument = "***" + mapReceiptData.get("payer-documento").substring(3, 8) + "***";
+        String receiverDocument = " - ";
+        if (mapReceiptData.get("payer-documento").length() == 11)
+            receiverDocument = "***" + mapReceiptData.get("payer-documento").substring(3, 8) + "***";
+        else if (mapReceiptData.get("payer-documento").length() == 14)
+            receiverDocument = "***" + mapReceiptData.get("payer-documento").substring(3, 11) + "***";
 
         String receiverAgency = mapReceiptData.get("payer-agencia");
 
@@ -210,7 +207,8 @@ public class ReceiptService {
         receipt.setTransactionId(mapReceiptData.get("rtrId"));
         receipt.setProtocol(mapReceiptData.get("txId"));
 
-        receipt.setDateGenerated(LocalDateTime.now().format(dateFormatter));
+        receipt.setDateGenerated(LocalDateTime.now(ZoneId.of("America/Sao_Paulo"))
+                .format(dateFormatter));
     }
 
     private Map<String, String> getInfo(String receiptInfo) {
@@ -219,26 +217,40 @@ public class ReceiptService {
 
         if (receiptInfo != null && !receiptInfo.isEmpty()) {
 
-            receiptInfo = receiptInfo.replaceAll("cpf", "documento")
+            receiptInfo = receiptInfo.replaceAll("cpf: null", "")
+                                     .replaceAll("cpf", "documento")
+                                     .replaceAll("cnpj", "documento")
                                      .replaceAll("txid", "txId")
                                      .replaceAll("\"", "");
 
             boolean isPayer = false;
+            boolean isRightRefund = false;
 
             String[] split = receiptInfo.split("\n");
 
-            for (int i = 0; i< split.length; i++) {
+            for (String line : split) {
 
-                String[] splitAux = split[i].split(": ");
+                String[] splitAux = line.split(": ");
 
                 if (splitAux.length > 1) {
                     if (isPayer)
                         mapReceiptData.put("payer-" + splitAux[0], splitAux[1]);
-                    else
+                    else {
+
+                        if (isRightRefund && splitAux[0].equals("rtrId"))
+                            continue;
+
+                        if (isRightRefund && splitAux[0].equals("liquidacao"))
+                            continue;
+
                         mapReceiptData.put(splitAux[0], splitAux[1]);
+                    }
 
                     if (isPayer && splitAux[0].equals("conta"))
                         isPayer = false;
+
+                    if (splitAux[0].equals("status") && splitAux[1].equals("DEVOLVIDO"))
+                        isRightRefund = true;
 
                 } else if (splitAux[0].equals("pagador:"))
                     isPayer = true;
@@ -287,13 +299,13 @@ public class ReceiptService {
         receiptDTO.setValueKey("Valor:");
 
         receiptDTO.setReceiverNameKey("Nome:");
-        receiptDTO.setReceiverDocumentKey("CPF/CPNJ:");
+        receiptDTO.setReceiverDocumentKey("CPF/CNPJ:");
         receiptDTO.setReceiverBankKey("Banco:");
         receiptDTO.setReceiverAgencyKey("Agência:");
         receiptDTO.setReceiverAccountKey("Conta:");
 
         receiptDTO.setPayerNameKey("Nome:");
-        receiptDTO.setPayerDocumentKey("Documento:");
+        receiptDTO.setPayerDocumentKey("CNPJ:");
         receiptDTO.setPayerBankKey("Banco:");
         receiptDTO.setTransactionIdKey("ID da Transação");
         receiptDTO.setProtocolKey("Protocolo");
