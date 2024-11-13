@@ -183,7 +183,7 @@ public class ReceiptService {
         String dateTransaction = LocalDateTime.parse(dateAux, dateFormatter1).format(dateFormatter);
 
         String receiverDocument = " - ";
-        if (mapReceiptData.get("payer-documento").length() == 11)
+        if (mapReceiptData.get("payer-documento").length() <= 11)
             receiverDocument = "***" + mapReceiptData.get("payer-documento").substring(3, 8) + "***";
         else if (mapReceiptData.get("payer-documento").length() == 14)
             receiverDocument = "***" + mapReceiptData.get("payer-documento").substring(3, 11) + "***";
@@ -205,7 +205,7 @@ public class ReceiptService {
 
         receipt.setPayerBank(getBank(mapReceiptData.get("rtrId")));
         receipt.setTransactionId(mapReceiptData.get("rtrId"));
-        receipt.setProtocol(mapReceiptData.get("txId"));
+        receipt.setProtocol(mapReceiptData.get("id"));
 
         receipt.setDateGenerated(LocalDateTime.now(ZoneId.of("America/Sao_Paulo"))
                 .format(dateFormatter));
@@ -241,6 +241,9 @@ public class ReceiptService {
                             continue;
 
                         if (isRightRefund && splitAux[0].equals("liquidacao"))
+                            continue;
+
+                        if (isRightRefund && splitAux[0].equals("id"))
                             continue;
 
                         mapReceiptData.put(splitAux[0], splitAux[1]);
