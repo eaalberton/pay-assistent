@@ -218,6 +218,7 @@ public class ReceiptService {
         if (receiptInfo != null && !receiptInfo.isEmpty()) {
 
             receiptInfo = receiptInfo.replaceAll("cpf: null", "")
+                                     .replaceAll("cnpj: null", "")
                                      .replaceAll("cpf", "documento")
                                      .replaceAll("cnpj", "documento")
                                      .replaceAll("txid", "txId")
